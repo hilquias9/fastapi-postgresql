@@ -6,6 +6,7 @@ from passw import STR_CONN
 class DataBaseConn():
     def __init__(self):
         self.STR_CONN=STR_CONN
+        self.inicialization()
         
     def add_client(self,username,password,email):
         hash_password=bcrypt.hashpw(password.encode(),bcrypt.gensalt()).decode()
@@ -24,3 +25,21 @@ class DataBaseConn():
                 cursor.execute("SELECT (username,email) FROM clients")
                 clients=cursor.fetchall()
                 return clients
+    
+    def inicialization(self):
+        with psycopg.connect(self.STR_CONN) as conn:
+            with conn.cursor() as cursor:
+                cursor.execute("""CREATE TABLE IF NOT EXISTS clients (
+                                id SERIAL PRIMARY KEY,
+                                username VARCHAR(100) NOT NULL,
+                                password TEXT NOT NULL,
+                                email TEXT NOT NULL
+                               )""")
+                conn.commit()
+                cursor.execute("""CREATE TABLE IF NOT EXISTS technicians (
+                               id SERIAL PRIMARY KEY,
+                               username VARCHAR(100) NOT NULL,
+                               password TEXT NOT NULL,
+                               email TEXT NOT NULL
+                               )""")
+                conn.commit()
