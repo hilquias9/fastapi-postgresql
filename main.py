@@ -1,4 +1,9 @@
 #fastapi dev main.py
+
+# status codes (200, 201, 404, 409...)
+# parâmetros de rota
+# query parameters
+# validação com Pydantic
 from fastapi import FastAPI
 from db_connection import DataBaseConn
 
@@ -15,3 +20,8 @@ def sesson(username:str,password:str,email:str):
 def show_clients():
     clients=data_base.show_clients()
     return {"MSG":clients}
+
+@app.get("/clients/{id}")
+def show_client(id:int):
+    client=data_base.show_client(id)
+    return {"MSG":{"nome":client[0][0],"email":client[0][1]}}

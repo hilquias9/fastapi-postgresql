@@ -9,6 +9,7 @@ class DataBaseConn():
         self.inicialization()
         
     def add_client(self,username,password,email):
+        #cadastra um cliente na tabela clients
         hash_password=bcrypt.hashpw(password.encode(),bcrypt.gensalt()).decode()
         with psycopg.connect(self.STR_CONN) as conn:
             with conn.cursor() as cursor:
@@ -20,13 +21,27 @@ class DataBaseConn():
                     raise HTTPException(status_code=409,detail="Dados inválidos!")
     
     def show_clients(self):
+        #RETORNA UMA TUPLA COM TODOS OS CLIENTES
         with psycopg.connect(self.STR_CONN) as conn:
             with conn.cursor() as cursor:
                 cursor.execute("SELECT (username,email) FROM clients")
                 clients=cursor.fetchall()
                 return clients
-    
+   
+    def show_client(self,id):
+        #RETORNA UMA TUPLA COM UM CLIENTE
+        with psycopg.connect(STR_CONN) as conn:
+            with conn.cursor() as cursor:
+                cursor.execute("""SELECT (username,email) FROM clients WHERE id=%s""",(id,))
+                client=cursor.fetchone()
+                if client:
+                    return client
+                else: raise HTTPException(status_code=404,detail="Cliente não encontrado!")
+            
+
+        
     def inicialization(self):
+        #inicializa todas as tabelas do banco de dados
         with psycopg.connect(self.STR_CONN) as conn:
             with conn.cursor() as cursor:
                 cursor.execute("""CREATE TABLE IF NOT EXISTS clients (
